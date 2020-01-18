@@ -36,6 +36,7 @@
     "roots/wordpress": "5.2.3",
     "roots/wp-config": "1.0.0",
     "roots/wp-password-bcrypt": "1.0.0",
+    "symfony/var-dumper": "^5.0",
     "timber/timber": "^1.14",
     "vlucas/phpdotenv": "^3.4.0",
     "wpackagist-plugin/advanced-custom-fields": "^5.8"
