@@ -1,8 +1,9 @@
 const path = require('path')
-const assetsManifest = require('webpack-assets-manifest')
+const WebpackAssetsManifest = require('webpack-assets-manifest')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const outputPath = 'web/app/themes/akformations/assets'
+const siteDevPath = 'http://a-k-formation.test'
 
 module.exports = (env, options) => {
   const isProduction = options.mode === 'production'
@@ -14,7 +15,7 @@ module.exports = (env, options) => {
   
     output: {
       path: path.resolve(__dirname, outputPath),
-      publicPath: isProduction ? './' : 'http://a-k-formation.test/',
+      publicPath: isProduction ? './' : 'http://localhost:8000/',
       filename: isProduction ? '[name].[hash].js' : '[name].js'
     },
   
@@ -32,8 +33,30 @@ module.exports = (env, options) => {
     },
 
     devServer: {
-      // contentBase: path.join(__dirname, outputPath)
-      public:  'http://a-k-formation.test'
+      // contentBase: path.join(__dirname, outputPath),
+      // stats: 'minimal',
+      // public:  siteDevPath,
+      port: 8000,
+      host: '0.0.0.0',
+      allowedHosts: [
+        'a-k-formation.test'
+      ],
+      
+      headers: {
+        "Set-Cookie": "HttpOnly;Secure;SameSite=Strict",
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, OPTIONS',
+        'Access-Control-Allow-Methods': 'X-Request-With, content-type, Authorization'
+      },
+      // proxy: {
+      //   '/api': {
+      //     target: siteDevPath,
+      //     changeOrigin: true,
+      //     secure: false,
+      //     ignorePath: true
+      //   }
+      // },
+      hot: true
     },
   
     module: {
@@ -44,43 +67,37 @@ module.exports = (env, options) => {
           use: ['babel-loader'],
         },
         {
-          test: /\.css$/,
-            use: [
-              MiniCssExtractPlugin.loader,
-              {
-                loader: 'css-loader',
-                options: {
-                  importLoaders: 1,
-                  sourceMap: !isProduction,
-                },
+          test: /\.s?css$/,
+          use: [
+            {
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                filename: '[name].[hash].css',
+                chunkFilename: '[id].[hash].css',
+                hmr: !isProduction,
               },
-            ],
-        },
-        {
-          test: /\.scss$/,
-            use: [
-              'style-loader',
-              {
-                loader: 'css-loader',
-                options: {
-                  sourceMap: !isProduction,
-                  importLoaders: 1,
-                },
+            },
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: !isProduction,
+                importLoaders: 1,
               },
-              {
-                loader: 'postcss-loader',
-                options: {
-                  sourceMap: !isProduction,
-                  plugins: () => [require('autoprefixer')]
-                },
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                sourceMap: !isProduction,
+                plugins: () => [require('autoprefixer')]
               },
-              {
-                loader: 'sass-loader',
-                options: {
-                  sourceMap: !isProduction,
-                },
+            },
+            {
+              loader: 'sass-loader',
+              options: {
+                sourceMap: !isProduction,
               },
-            ],
+            },
+          ],
         },
         // {
         //   test: /\.(png|jpe?g|gif|svg|woff2?|eot|ttf|otf|wav)(\?.*)?$/,
@@ -96,11 +113,14 @@ module.exports = (env, options) => {
     },
   
     plugins: [
-      new assetsManifest({
+      new WebpackAssetsManifest({
         writeToDisk: true,
         publicPath: true
       }),
-      new MiniCssExtractPlugin()
+      new MiniCssExtractPlugin({
+        filename: '[name].css',
+        chunkFilename: '[id].css',
+      })
     ]
   }
 
