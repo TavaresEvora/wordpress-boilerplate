@@ -1,19 +1,20 @@
 const path = require('path')
 const assetsManifest = require('webpack-assets-manifest')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 const outputPath = 'web/app/themes/akformations/assets'
 
-module.exports = env => {
-  const isProduction = env == 'production'
+module.exports = (env, options) => {
+  const isProduction = options.mode === 'production'
 
-  return {
+  const config = {
     entry: {
       app: ['./assets/js/app.js', './assets/scss/app.scss']
     },
   
     output: {
       path: path.resolve(__dirname, outputPath),
-      publicPath: isProduction ? './' : 'http://localhost/a-k-formations/web/',
+      publicPath: isProduction ? './' : 'http://a-k-formation.test/',
       filename: isProduction ? '[name].[hash].js' : '[name].js'
     },
   
@@ -29,6 +30,11 @@ module.exports = env => {
     externals: {
       'jquery': 'jQuery'
     },
+
+    devServer: {
+      // contentBase: path.join(__dirname, outputPath)
+      public:  'http://a-k-formation.test'
+    },
   
     module: {
       rules: [
@@ -39,9 +45,8 @@ module.exports = env => {
         },
         {
           test: /\.css$/,
-          use: ExtractTextPlugin.extract({
-            fallback: 'style-loader',
             use: [
+              MiniCssExtractPlugin.loader,
               {
                 loader: 'css-loader',
                 options: {
@@ -50,25 +55,23 @@ module.exports = env => {
                 },
               },
             ],
-          }),
         },
         {
           test: /\.scss$/,
-          use: ExtractTextPlugin.extract({
-            fallback: 'style-loader',
             use: [
+              'style-loader',
               {
                 loader: 'css-loader',
                 options: {
                   sourceMap: !isProduction,
                   importLoaders: 1,
-                  minimize: isProduction,
                 },
               },
               {
                 loader: 'postcss-loader',
                 options: {
                   sourceMap: !isProduction,
+                  plugins: () => [require('autoprefixer')]
                 },
               },
               {
@@ -78,7 +81,6 @@ module.exports = env => {
                 },
               },
             ],
-          }),
         },
         // {
         //   test: /\.(png|jpe?g|gif|svg|woff2?|eot|ttf|otf|wav)(\?.*)?$/,
@@ -97,7 +99,12 @@ module.exports = env => {
       new assetsManifest({
         writeToDisk: true,
         publicPath: true
-      })
+      }),
+      new MiniCssExtractPlugin()
     ]
   }
+
+  if (!isProduction) config.devtool = 'source-map'
+
+  return config
 }

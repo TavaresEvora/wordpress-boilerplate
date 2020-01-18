@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f12ae7347b6bc01a00f2f7efa8bf7397",
+    "content-hash": "c3dbb662daa387355b2915d510912618",
     "packages": [
         {
             "name": "composer/installers",
@@ -231,7 +231,8 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WordPress/WordPress/zipball/5.2.3"
+                "url": "https://api.github.com/repos/WordPress/WordPress/zipball/5.2.3",
+                "reference": "5.2.3"
             },
             "require": {
                 "php": ">=5.3.2",
@@ -521,6 +522,24 @@
                 "environment"
             ],
             "time": "2019-06-15T22:40:20+00:00"
+        },
+        {
+            "name": "wpackagist-plugin/advanced-custom-fields",
+            "version": "5.8.7",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/advanced-custom-fields/",
+                "reference": "tags/5.8.7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/advanced-custom-fields.5.8.7.zip"
+            },
+            "require": {
+                "composer/installers": "~1.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/advanced-custom-fields/"
         }
     ],
     "packages-dev": [
